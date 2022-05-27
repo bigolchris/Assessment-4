@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Back End Assessment</title>
+  </head>
+  <body class="container">
+    <button id="complimentButton">Get a compliment</button>
+    <button id="fortuneBtn">Get a fortune</button>
+
+    <form id="names">
+      <input type="text"  id="nameInp" placeholder="Enter your name">
+      <button id="nameSub">Submit</button>
+    </form>
+
+    <ul id="listOfNames"></ul>
+
+    <form id="nameChange">
+      <input type="text"  id="ogName">
+      <input type="text" id="nameChanged">
+      <button id="changeBtn">Change</button>
+    </form>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="main.js"></script>
+
+    <script>
+      const listOfNames = document.querySelector("#listOfNames")
+      const clearNames = () => {
+        listOfNames.innerHTML = '';
+      }
+    </script>
+    
+    
+    <script>
+      const addName = document.querySelector("#names")
+      const nameSub = document.querySelector("#nameInp")
+
+      const addToPage = evt => {
+        evt.preventDefault();
+        clearNames();
+
+        let nameAdded = {
+          name: nameSub.value
+        }
+        axios
+          .post("http://localhost:4000/names", nameAdded)
+          .then(response =>{
+            console.log(response.data)
+            let namesArray = response.data
+            namesArray.forEach(el => {
+              let items = document.createElement("li")
+              items.textContent = el
+              listOfNames.appendChild(items)
+            })
+          })
+          .catch(err => console.log(err))
+      }
+
+      addName.addEventListener('submit', addToPage)
+    </script>
+
+
+    <script>
+      const changeName = document.querySelector("#nameChange")
+
+      const changeForm = evt => {
+        evt.preventDefault();
+        clearNames();
+
+        let nameToChange = document.queryselector("#ogName")
+        let onceChanged = document.queryselector("#nameChanged")
+
+        let nameObj = {
+          original:  nameToChange.value,
+          changed: onceChanged.value
+        }
+
+        axios
+          .put("http://localhost:4000/names", nameObj)
+          .then(response => {
+            let namesArray = response.data
+            namesArray.forEach(el => {
+              let items = document.createElement("li")
+              items.textContent = el
+              listOfNames.appendChild(items)
+            })
+          })
+          .catch(err => console.log(err))
+      }
+
+      changeName.addEventListener("submit", changeForm)
+    </script>
+    
+  </body>
+</html>
